@@ -1,0 +1,19 @@
+#!/bin/bash
+
+cd /var/spool/pbs
+LOGFILE=server_priv/accounting/$(date +%Y%m%d)
+
+while ! test -f $LOGFILE;do sleep 5;done
+timeout 86400 tail -n +1 -f $LOGFILE |
+	awk -F\; '
+		  function parseE(jobid, line) {
+			;user = line;
+			;gsub(/.*user=/,"",user);gsub(/ .*/,"",user);
+            ;gsub(/.*resources_used.walltime=/,"",line);gsub(/ .*/,"",line);
+			if (!reported[jobid]) {
+				system("/opt/pbs/bin/softwalltime_predictor-runtime_saver " jobid " " user " " line " </dev/null");
+				reported[jobid]=1;
+			}
+		  }
+		  $2~/E/{ parseE($3, $4); }
+		 ' >> softwalltime_predictor.log 2>&1

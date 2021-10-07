@@ -1,0 +1,8 @@
+create hook softwalltime_predictor
+set hook softwalltime_predictor enabled = true
+set hook softwalltime_predictor event = queuejob
+set hook softwalltime_predictor event += runjob
+set hook softwalltime_predictor user = pbsadmin
+set hook softwalltime_predictor alarm = 60
+set hook softwalltime_predictor order = 1
+import hook softwalltime_predictor application/x-python default /opt/pbs/hooks/hook_softwalltime_predictor.py
