@@ -66,6 +66,9 @@ class Setter(softwalltime_psql.Predictor):
         self.disconnect()
 
         if soft_walltime:
+            ### 2.11.2021 - 15 minutes added ###
+            soft_walltime += 900
+
             walltime = job.Resource_List["walltime"]
             if soft_walltime > walltime:
                 soft_walltime = walltime
