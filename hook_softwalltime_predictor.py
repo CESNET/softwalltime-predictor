@@ -69,7 +69,10 @@ class Setter(softwalltime_psql.Predictor):
             ### 2.11.2021 - 15 minutes added ###
             soft_walltime += 900
 
-            walltime = job.Resource_List["walltime"]
+            walltime = self.walltime2sec(job.Resource_List["walltime"])
+            if walltime == 0:
+                walltime = 86400
+
             if soft_walltime > walltime:
                 soft_walltime = walltime
             job.Resource_List["soft_walltime"] = pbs.duration(soft_walltime)
