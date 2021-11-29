@@ -1,6 +1,7 @@
 import sys
 
 sys.path.insert(1, "/usr/lib64/python3.6/site-packages")
+sys.path.insert(1, "/usr/lib/python3/dist-packages")
 
 try:
     import psycopg2
@@ -157,6 +158,26 @@ VALUES ('%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, '%s', %d, %d, false, NOW()
             self.conn.commit()
         except Exception as err:
             raise Exception("softwalltime_predictor hook failed to predict walltime: " + str(err))
+
+        return res
+
+    def predicted_perc_coefficient(self, owner):
+        res = 0
+        if not self.is_connected():
+            return res
+
+        count = int(self.params["perc_base_count"])
+
+        sql = "SELECT MAX(perc) FROM (SELECT ((runtime * 1.0)/ (walltime * 1.0)) AS perc FROM %s WHERE owner = '%s' AND finished = true ORDER BY date DESC LIMIT %d) AS percentages;" % (self.table_name, owner, count)
+
+        try:
+            cur = self.conn.cursor()
+            cur.execute(sql)
+            res = cur.fetchone()[0]
+            cur.close()
+            self.conn.commit()
+        except Exception as err:
+            raise Exception("softwalltime_predictor hook failed to predict perc_coefficient: " + str(err))
 
         return res
 

@@ -5,7 +5,7 @@ sys.path.insert(1, "/opt/pbs/lib/softwalltime")
 try:
     import softwalltime_psql
 except Exception as err:
-    pbs.logmsg(pbs.EVENT_ERROR, "softwalltime_predictor hook failed to import softwalltime_psql " % str(err))
+    pbs.logmsg(pbs.EVENT_ERROR, "softwalltime_predictor hook failed to import softwalltime_psql: %s" % str(err))
     pbs.event().accept()
 
 
@@ -60,23 +60,35 @@ class Setter(softwalltime_psql.Predictor):
 
     def run(self, job, owner):
 
+        soft_walltime = None
+
+        walltime = self.walltime2sec(job.Resource_List["walltime"])
+        if walltime == 0:
+            walltime = 86400
+
         self.connect()
         self.check_table(self.table_name)
-        soft_walltime = self.predicted_avg_walltime(owner)
+        if False:
+            soft_walltime = self.predicted_avg_walltime(owner)
+        if True:
+            coefficient = self.predicted_perc_coefficient(owner)
+            if coefficient:
+                if coefficient > 1:
+                    coefficient = 1.0
+                if coefficient > 0:
+                    pbs.logmsg(pbs.EVENT_DEBUG, "softwalltime_predictor hook perc coefficient: %f" % (coefficient))
+                    soft_walltime = int(walltime * coefficient)
+
         self.disconnect()
 
         if soft_walltime:
             ### 2.11.2021 - 15 minutes added ###
             soft_walltime += 900
 
-            walltime = self.walltime2sec(job.Resource_List["walltime"])
-            if walltime == 0:
-                walltime = 86400
-
             if soft_walltime > walltime:
                 soft_walltime = walltime
             job.Resource_List["soft_walltime"] = pbs.duration(soft_walltime)
-            pbs.logmsg(pbs.EVENT_DEBUG, "softwalltime_predictor hook predicting: %s %s %d" % (job.id, owner, soft_walltime,))
+            pbs.logmsg(pbs.EVENT_DEBUG, "softwalltime_predictor hook predicting: %s %s %d" % (job.id, owner, soft_walltime))
 
         return
 
