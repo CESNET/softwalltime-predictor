@@ -104,6 +104,10 @@ try:
         o.run(e.job, e.requestor)
 
     if e.type == pbs.RUNJOB:
+        o = Setter()
+        o.run(e.job, e.job.euser)
+
+    if e.type == pbs.RUNJOB:
         o = Starter()
         o.run(e.job)
 
