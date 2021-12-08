@@ -1,6 +1,6 @@
 Name:    softwalltime-predictor
 Version: 1.0
-Release: 3
+Release: 4
 Summary: softwalltime-predictor
 BuildRequires: python3
 Requires: python3
