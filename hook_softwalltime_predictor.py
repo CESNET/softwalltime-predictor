@@ -13,8 +13,11 @@ class Starter(softwalltime_psql.Predictor):
     def __init__(self):
         super().__init__()
 
-    def run(self, job):
+    def run(self, job, tmp_soft_walltime):
         soft_walltime = self.walltime2sec(job.Resource_List["soft_walltime"])
+
+        if not soft_walltime:
+            soft_walltime = tmp_soft_walltime;
 
         if soft_walltime:
            
@@ -90,9 +93,7 @@ class Setter(softwalltime_psql.Predictor):
             job.Resource_List["soft_walltime"] = pbs.duration(soft_walltime)
             pbs.logmsg(pbs.EVENT_DEBUG, "softwalltime_predictor hook predicting: %s %s %d" % (job.id, owner, soft_walltime))
 
-        return
-
-
+        return soft_walltime
 
 e = pbs.event()
 try:
@@ -104,12 +105,10 @@ try:
         o.run(e.job, e.requestor)
 
     if e.type == pbs.RUNJOB:
-        o = Setter()
-        o.run(e.job, e.job.euser)
-
-    if e.type == pbs.RUNJOB:
-        o = Starter()
-        o.run(e.job)
+        o1 = Setter()
+        soft_walltime = o1.run(e.job, e.job.euser)
+        o2 = Starter()
+        o2.run(e.job, soft_walltime)
 
 except SystemExit:
     pass

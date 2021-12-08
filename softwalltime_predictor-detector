@@ -9,9 +9,11 @@ timeout 86400 tail -n +1 -f $LOGFILE |
 		  function parseE(jobid, line) {
 			;user = line;
 			;gsub(/.*user=/,"",user);gsub(/ .*/,"",user);
+			;walltime = line;
+			;gsub(/.*Resource_List.walltime=/,"",walltime);gsub(/ .*/,"",walltime);
             ;gsub(/.*resources_used.walltime=/,"",line);gsub(/ .*/,"",line);
 			if (!reported[jobid]) {
-				system("/opt/pbs/bin/softwalltime_predictor-runtime_saver " jobid " " user " " line " </dev/null");
+				system("/opt/pbs/bin/softwalltime_predictor-runtime_saver " jobid " " user " " line " " walltime " </dev/null");
 				reported[jobid]=1;
 			}
 		  }

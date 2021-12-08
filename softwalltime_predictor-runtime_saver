@@ -10,9 +10,10 @@ class Finisher(softwalltime_psql.Predictor):
     def __init__(self):
         super().__init__()
 
-    def run(self, jobid, owner, runtime):
+    def run(self, jobid, owner, runtime, walltime):
 
         runtime = self.walltime2sec(runtime)
+        walltime = self.walltime2sec(walltime)
 
         self.connect()
         if not self.check_table(self.table_name):
@@ -20,17 +21,17 @@ class Finisher(softwalltime_psql.Predictor):
             return
 
         if self.check_job_exists(jobid):
-            self.insert_finished_job(True, jobid, owner, runtime)
+            self.insert_finished_job(True, jobid, owner, runtime, walltime)
         else:
-            self.insert_finished_job(False, jobid, owner, runtime)
+            self.insert_finished_job(False, jobid, owner, runtime, walltime)
 
         self.disconnect()
 
         return
 
-if len(sys.argv) != 4:
-    print("Three arguments are needed")
+if len(sys.argv) != 5:
+    print("Four arguments are needed: %s" % str(sys.argv))
     exit(1)
         
 saver = Finisher()
-saver.run(sys.argv[1], sys.argv[2], sys.argv[3])
+saver.run(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

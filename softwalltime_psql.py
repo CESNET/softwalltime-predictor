@@ -104,17 +104,17 @@ date timestamp);" % table_name
 
         return res
 
-    def insert_finished_job(self, update, jobid, owner, runtime):
+    def insert_finished_job(self, update, jobid, owner, runtime, walltime):
         if not self.is_connected():
             return
 
         if update:
-            sql = "UPDATE %s SET runtime = %d, finished = true, date = NOW() WHERE jobid = '%s'" \
-% (self.table_name, runtime, jobid)
+            sql = "UPDATE %s SET runtime = %d, walltime = %d, finished = true, date = NOW() WHERE jobid = '%s'" \
+% (self.table_name, runtime, walltime, jobid)
         else:
-            sql = "INSERT INTO %s (jobid, owner, runtime, finished, date) \
-VALUES ('%s', '%s', %d, true, NOW());" \
-% (self.table_name, jobid, owner, runtime)
+            sql = "INSERT INTO %s (jobid, owner, runtime, walltime, finished, date) \
+VALUES ('%s', '%s', %d, %d, true, NOW());" \
+% (self.table_name, jobid, owner, runtime, walltime)
 
         try:
             cur = self.conn.cursor()
