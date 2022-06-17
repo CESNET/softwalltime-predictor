@@ -1,5 +1,6 @@
 import pbs
 import sys
+import time
 
 sys.path.insert(1, "/opt/pbs/lib/softwalltime")
 try:
@@ -97,7 +98,6 @@ class Setter(softwalltime_psql.Predictor):
 
 e = pbs.event()
 try:
-#if True:
     o = None
 
     if e.type == pbs.QUEUEJOB:
@@ -105,8 +105,12 @@ try:
         o.run(e.job, e.requestor)
 
     if e.type == pbs.RUNJOB:
-        o1 = Setter()
-        soft_walltime = o1.run(e.job, e.job.euser)
+        soft_walltime = None
+
+        if e.job.ctime + 3600 < int(time.time()):
+            o1 = Setter()
+            soft_walltime = o1.run(e.job, e.job.euser)
+
         o2 = Starter()
         o2.run(e.job, soft_walltime)
 
