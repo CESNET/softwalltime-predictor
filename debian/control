@@ -1,0 +1,12 @@
+Source: softwalltime-predictor
+Section: unknown
+Priority: optional
+Maintainer: Václav Chlumský <vchlumsky@cesnet.cz>
+Build-Depends: debhelper
+Standards-Version: 3.8.4
+ 
+Package: softwalltime-predictor
+Depends: python3
+Section: utils
+Architecture: all
+Description: Softwalltime predictor
