@@ -86,6 +86,11 @@ class Setter(softwalltime_psql.Predictor):
         self.disconnect()
 
         if soft_walltime:
+
+            ### 12.7.2022
+            if walltime > (3600 * 24):
+                soft_walltime = int(soft_walltime * 2.0)
+
             ### 2.11.2021 - 15 minutes added ###
             soft_walltime += 900
 
