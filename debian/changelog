@@ -1,3 +1,10 @@
+softwalltime-predictor (1.0-5) unstable; urgency=low
+
+  * long jobs get double softwalltime
+  * add cooldown of softwalltime change after submitting jobs
+
+ -- Václav Chlumský, CESNET. <vchlumsky@cesnet.cz>  Mon, 12 Jul 2022 11:30:00 +0100
+
 softwalltime-predictor (1.0-4) unstable; urgency=low
 
   * initial version
