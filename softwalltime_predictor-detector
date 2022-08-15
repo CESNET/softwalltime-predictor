@@ -9,13 +9,52 @@ timeout 86400 tail -n +1 -f $LOGFILE |
 		  function parseE(jobid, line) {
 			;user = line;
 			;gsub(/.*user=/,"",user);gsub(/ .*/,"",user);
+
+			;jobname = line;
+			;gsub(/.*jobname=/,"",jobname);gsub(/ .*/,"",jobname);
+
+			;queue = line;
+			;gsub(/.*queue=/,"",queue);gsub(/ .*/,"",queue);
+
+			;nodes = line;
+			;gsub(/.*Resource_List.select=/,"",nodes);gsub(/ .*/,"",nodes);
+
+			;nodect = line;
+			;gsub(/.*Resource_List.nodect=/,"",nodect);gsub(/ .*/,"",nodect);
+
+			;ncpus = line;
+			;gsub(/.*Resource_List.ncpus=/,"",ncpus);gsub(/ .*/,"",ncpus);
+
+			;ngpus = line;
+			;gsub(/.*Resource_List.ngpus=/,"",ngpus);gsub(/ .*/,"",ngpus);
+			if (ngpus !~ "^[0-9]+$") {
+				ngpus = 0
+			}
+
+			;mem = line;
+			;gsub(/.*Resource_List.mem=/,"",mem);gsub(/ .*/,"",mem);
+
+			;soft_walltime = line;
+			;gsub(/.*Resource_List.soft_walltime=/,"",soft_walltime);gsub(/ .*/,"",soft_walltime);
+			if (soft_walltime !~ "^[0-9]+:[0-9]+:[0-9]+$") {
+				soft_walltime = "NULL"
+			}
+
 			;walltime = line;
 			;gsub(/.*Resource_List.walltime=/,"",walltime);gsub(/ .*/,"",walltime);
-            ;gsub(/.*resources_used.walltime=/,"",line);gsub(/ .*/,"",line);
+
+			;runtime = line;
+            ;gsub(/.*resources_used.walltime=/,"",runtime);gsub(/ .*/,"",runtime);
+
 			if (!reported[jobid]) {
-				system("/opt/pbs/bin/softwalltime_predictor-runtime_saver " jobid " " user " " line " " walltime " </dev/null");
+				system("/opt/pbs/bin/softwalltime_predictor-runtime_saver " jobid " " user " " jobname " " queue " " nodes " " nodect " " ncpus " " ngpus " " mem " NULL " soft_walltime " " walltime " " runtime " </dev/null");
+
 				reported[jobid]=1;
 			}
 		  }
 		  $2~/E/{ parseE($3, $4); }
 		 ' >> softwalltime_predictor.log 2>&1
+
+##################
+# old call #######
+#system("/opt/pbs/bin/softwalltime_predictor-runtime_saver " jobid " " user " " runtime " " walltime " </dev/null");

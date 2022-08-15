@@ -116,8 +116,12 @@ try:
             o1 = Setter()
             soft_walltime = o1.run(e.job, e.job.euser)
 
-        o2 = Starter()
-        o2.run(e.job, soft_walltime)
+        ##########################################
+        ### 15.8.2022 jsme presunuli ukladani do databaze vyhradne
+        ### do hooku na konci jobu
+        ##########################################
+        #o2 = Starter()
+        #o2.run(e.job, soft_walltime)
 
 except SystemExit:
     pass

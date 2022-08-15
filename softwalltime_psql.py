@@ -104,6 +104,29 @@ date timestamp);" % table_name
 
         return res
 
+    def insert_finished_job_full(self, update, jobid, owner, job_name, queue,  nodes, nodect, ncpus, ngpus, mem, interactive, soft_walltime, walltime, runtime):
+        if not self.is_connected():
+            return
+
+        if soft_walltime == 0:
+            soft_walltime = "NULL"
+
+        if update:
+            sql = "UPDATE %s SET queue = '%s', nodes = '%s', nodect = %d, ncpus = %d, ngpus = %d, mem = %d, runtime = %d, soft_walltime = %s, walltime = %d, finished = true, date = NOW() WHERE jobid = '%s'" \
+% (self.table_name, queue, nodes, nodect, ncpus, ngpus, mem, runtime, soft_walltime, walltime, jobid)
+        else:
+            sql = "INSERT INTO %s (jobid, owner, job_name, queue, nodes, nodect, ncpus, ngpus, mem, runtime, soft_walltime, walltime, finished, date) \
+VALUES ('%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %s, %d, true, NOW());" \
+% (self.table_name, jobid, owner, job_name, queue, nodes, nodect, ncpus, ngpus, mem, runtime, soft_walltime, walltime)
+
+        try:
+            cur = self.conn.cursor()
+            cur.execute(sql)
+            cur.close()
+            self.conn.commit()
+        except Exception as err:
+            raise Exception("softwalltime_predictor hook failed to insert finished job (full) into database: " + str(err))
+
     def insert_finished_job(self, update, jobid, owner, runtime, walltime):
         if not self.is_connected():
             return
