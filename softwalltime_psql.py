@@ -80,7 +80,17 @@ date timestamp);" % table_name
             cur.close()
             self.conn.commit()
         except:
-            raise Exception("softwalltime_predictor hook failed to to check or create table.")
+            raise Exception("softwalltime_predictor hook failed to check or create table.")
+
+        sql = "CREATE INDEX IF NOT EXISTS softwalltime_lfin ON %s ( owner, finished, date DESC);" % table_name
+
+        try:
+            cur = self.conn.cursor()
+            cur.execute(sql)
+            cur.close()
+            self.conn.commit()
+        except:
+            raise Exception("softwalltime_predictor hook failed to check or create index.")
 
         return True
 
@@ -163,6 +173,35 @@ VALUES ('%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, '%s', %d, %d, false, NOW()
             self.conn.commit()
         except Exception as err:
             raise Exception("softwalltime_predictor hook failed to insert queued job into database: " + str(err))
+
+    def clean_old_records(self):
+
+        if not bool(self.params["enable_history_cleaning"]):
+            return
+
+        if not self.is_connected():
+            return
+
+        sql = " \
+do $$ \
+declare \
+	i record; \
+begin \
+    for i in \
+        select distinct owner from %s \
+    loop \
+        DELETE FROM %s WHERE owner = i.owner AND jobid NOT IN (SELECT jobid FROM %s WHERE owner = i.owner ORDER BY date DESC LIMIT %d); \
+    end loop; \
+end; $$ \
+; " % (self.table_name, self.table_name, self.table_name, int(self.params["history_size"]))
+
+        try:
+            cur = self.conn.cursor()
+            cur.execute(sql)
+            cur.close()
+            self.conn.commit()
+        except Exception as err:
+            raise Exception("softwalltime_predictor failed to clean old records: " + str(err))
 
     def predicted_avg_walltime(self, owner):
         res = 0

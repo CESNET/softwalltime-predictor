@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+import sys
+
+sys.path.insert(1, "/opt/pbs/lib/softwalltime")
+import softwalltime_psql
+
+class Cleaner(softwalltime_psql.Predictor):
+    def __init__(self):
+        super().__init__()
+
+    def run(self):
+
+        self.connect()
+        if not self.check_table(self.table_name):
+            self.disconnect()
+            return
+
+        self.clean_old_records()
+
+        self.disconnect()
+
+        return
+
+clean = Cleaner()
+clean.run()
