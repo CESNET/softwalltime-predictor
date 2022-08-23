@@ -34,8 +34,26 @@ class Predictor(object):
         self.conn = None
         self.connected = False
         self.table_name = "softwalltime"
+
         self.params = config(section="general")
+        if not "avg_base_count" in self.params.keys():
+            self.params["avg_base_count"] = 2
+        if not "perc_base_count" in self.params.keys():
+            self.params["perc_base_count"] = 15
+        if not "enable_history_cleaning" in self.params.keys():
+            self.params["enable_history_cleaning"] = False
+        if not "history_size" in self.params.keys():
+            self.params["history_size"] = 100
+
         self.psql_params = config(section="postgresql")
+        if not "host" in self.psql_params.keys():
+            self.psql_params["host"] = "localhost"
+        if not "port" in self.psql_params.keys():
+            self.psql_params["port"] = 5455
+        if not "database" in self.psql_params.keys():
+            self.psql_params["database"] = "walltime_extender"
+        if not "user" in self.psql_params.keys():
+            self.psql_params["user"] = "postgres"
 
     def connect(self):
         try:

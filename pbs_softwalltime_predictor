@@ -1,1 +1,2 @@
 5 0 * * * root /opt/pbs/bin/softwalltime_predictor-detector
+10 0 * * * root /opt/pbs/bin/softwalltime_predictor-cleaner
