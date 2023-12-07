@@ -13,6 +13,7 @@ override_dh_auto_install:
 	cp $(CURDIR)/pbs_softwalltime_predictor $(CURDIR)/debian/softwalltime-predictor/etc/cron.d/pbs_softwalltime_predictor
 	cp $(CURDIR)/hook_softwalltime_predictor.py $(CURDIR)/debian/softwalltime-predictor/opt/pbs/hooks/hook_softwalltime_predictor.py
 	cp $(CURDIR)/softwalltime.conf $(CURDIR)/debian/softwalltime-predictor/opt/pbs/etc/softwalltime.conf
+	cp $(CURDIR)/softwalltime_predictor-cleaner $(CURDIR)/debian/softwalltime-predictor/opt/pbs/bin/softwalltime_predictor-cleaner
 	cp $(CURDIR)/softwalltime_predictor-detector $(CURDIR)/debian/softwalltime-predictor/opt/pbs/bin/softwalltime_predictor-detector
 	cp $(CURDIR)/softwalltime_predictor-runtime_saver $(CURDIR)/debian/softwalltime-predictor/opt/pbs/bin/softwalltime_predictor-runtime_saver
 	cp $(CURDIR)/softwalltime_psql.py $(CURDIR)/debian/softwalltime-predictor/opt/pbs/lib/softwalltime/softwalltime_psql.py
