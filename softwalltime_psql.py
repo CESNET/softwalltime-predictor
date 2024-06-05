@@ -6,7 +6,7 @@ sys.path.insert(1, "/usr/lib/python3/dist-packages")
 try:
     import psycopg2
 except Exception as err:
-    raise Exception("softwalltime failed to import psycopg2: %s" + str(err))
+    raise Exception("softwalltime failed to import psycopg2: %s" % str(err))
 from configparser import ConfigParser
 
 

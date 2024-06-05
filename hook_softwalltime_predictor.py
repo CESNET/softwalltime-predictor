@@ -2,7 +2,7 @@ import pbs
 import sys
 import time
 
-sys.path.insert(1, "/opt/pbs/lib/softwalltime")
+sys.path.insert(0, "/opt/pbs/lib/softwalltime")
 try:
     import softwalltime_psql
 except Exception as err:
@@ -18,7 +18,7 @@ class Starter(softwalltime_psql.Predictor):
         soft_walltime = self.walltime2sec(job.Resource_List["soft_walltime"])
 
         if not soft_walltime:
-            soft_walltime = tmp_soft_walltime;
+            soft_walltime = tmp_soft_walltime
 
         if soft_walltime:
            
