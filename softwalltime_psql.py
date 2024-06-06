@@ -263,11 +263,17 @@ end; $$ \
 
     def walltime2sec(self, w):
         s = str(w).split(":")
-        if (len(s) != 3):
+        if len(s) == 1:
+            seconds = int(s[0])
+        elif len(s) == 2:
+            seconds = int(s[0]) * 60
+            seconds += int(s[1])
+        elif len(s) == 3:
+            seconds = int(s[0]) * 60 * 60
+            seconds += int(s[1]) * 60
+            seconds += int(s[2])
+        else:
             return 0
-        seconds = int(s[0]) * 60 * 60;
-        seconds += int(s[1]) * 60;
-        seconds += int(s[2]);
         return seconds
 
     def mem2kb(self, mem):
